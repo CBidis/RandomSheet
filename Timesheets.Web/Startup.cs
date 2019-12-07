@@ -1,13 +1,13 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using AutoMapper;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Timesheets.Persistence;
+using Microsoft.EntityFrameworkCore;
+using Timesheets.Web.Extensions;
 
 namespace Timesheets.Web
 {
@@ -23,6 +23,15 @@ namespace Timesheets.Web
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+            services.AddDbContext<TimesheetDbContext>(options =>
+                        options.UseSqlServer(Configuration.GetConnectionString("TimesheetDB"))
+                        , ServiceLifetime.Scoped);
+
+            services.ConfigureIdentity();
+            services.InjectRepositories();
+            services.InjectServices();
+
             services.AddControllersWithViews();
         }
 

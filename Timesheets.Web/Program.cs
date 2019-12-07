@@ -1,11 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Timesheet.Business.Contracts;
+using Timesheets.Web.Data;
 
 namespace Timesheets.Web
 {
@@ -13,14 +13,33 @@ namespace Timesheets.Web
     {
         public static void Main(string[] args)
         {
-            CreateHostBuilder(args).Build().Run();
+            IWebHost host = CreateWebHostBuilder(args).Build();
+
+            using (IServiceScope serviceScope = host.Services.CreateScope())
+            {
+                IServiceProvider services = serviceScope.ServiceProvider;
+
+                try
+                {
+                    IRoleService roleService = services.GetRequiredService<IRoleService>();
+                    IUserService userService = services.GetRequiredService<IUserService>();
+                    roleService.SeedRolesAsync(Seed.GetInitialRoles()).Wait();
+                    userService.CreateAsync(Seed.GetDefaultAdmin()).Wait();
+                }
+                catch (Exception ex)
+                {
+                    ILogger<Program> logger = services.GetRequiredService<ILogger<Program>>();
+                    logger.LogError(ex, "An error occurred.");
+                }
+            }
+
+            host.Run();
         }
 
-        public static IHostBuilder CreateHostBuilder(string[] args) =>
-            Host.CreateDefaultBuilder(args)
-                .ConfigureWebHostDefaults(webBuilder =>
-                {
-                    webBuilder.UseStartup<Startup>();
-                });
+        public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
+            WebHost.CreateDefaultBuilder(args).ConfigureAppConfiguration((hostingContext, config) =>
+            {
+               //Add configuration here if you need!!
+            }).UseStartup<Startup>();
     }
 }

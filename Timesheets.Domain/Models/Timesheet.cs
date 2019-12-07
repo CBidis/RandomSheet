@@ -9,7 +9,7 @@ namespace Timesheets.Domain.Models
     /// </summary>
     public class Timesheet : BaseEntity<int>
     {
-        public long UserId { get; set; }
+        public int UserId { get; set; }
         public User User { get; set; }
         public DateTime DateCreated { get; set; }
         public int HoursWorked { get; set; }

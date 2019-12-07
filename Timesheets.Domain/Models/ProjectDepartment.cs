@@ -5,10 +5,10 @@
     /// </summary>
     public class ProjectDepartment : BaseEntity<int>
     {
-        public long ProjectId { get; set; }
+        public int ProjectId { get; set; }
         public Project Project { get; set; }
 
-        public long DepartmentId { get; set; }
+        public int DepartmentId { get; set; }
         public Department Department { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Timesheets.Domain.Models;
 
@@ -7,12 +8,15 @@ namespace Timesheets.Persistence
     /// <summary>
     /// Timesheet Unit of Work
     /// </summary>
-    public class TimesheetDbContext : IdentityDbContext
+    public class TimesheetDbContext : IdentityDbContext<User, Role, int, IdentityUserClaim<int>, IdentityUserRole<int>, IdentityUserLogin<int>,
+                                                            IdentityRoleClaim<int>, IdentityUserToken<int>>
     {
         public TimesheetDbContext(DbContextOptions<TimesheetDbContext> options) : base(options)
         {
         }
 
+        public new DbSet<User> Users { get; set; }
+        public new DbSet<Role> Roles { get; set; }
         public DbSet<Department> Deparments { get; set; }
         public DbSet<Project> Projects { get; set; }
         public DbSet<ProjectDepartment> ProjectsDepartments { get; set; }
@@ -23,9 +27,10 @@ namespace Timesheets.Persistence
             base.OnModelCreating(builder);
 
             //one-to-one mapping
-            builder.Entity<User>()
-                .HasOne(user => user.Timesheet)
-                .WithOne(p => p.User);
+            builder.Entity<Timesheet>()
+                .HasOne(user => user.User)
+                .WithOne(p => p.Timesheet)
+                .HasForeignKey<Timesheet>(p => p.UserId);
 
             // many-to-many (Deparment - Related Projects)
             builder.Entity<ProjectDepartment>()

@@ -13,7 +13,7 @@ namespace Timesheet.Business.Contracts
     /// <typeparam name="TEntity">Derived type of Entity Base (aka Domain Entity)</typeparam>
     /// <typeparam name="TKey">Type parameter of Key Value</typeparam>
     /// <typeparam name="TDto">Derived Type of BaseDto</typeparam>
-    public interface IGenericService<TEntity, TKey, TDto> where TEntity : BaseEntity<TKey> where TDto : IDto<TKey> where TKey : struct
+    public interface IGenericService<TEntity, TKey, TDto> where TEntity : class, IEntity<TKey> where TDto : IDto<TKey> where TKey : struct
     {
         /// <summary>
         /// Paginated Results

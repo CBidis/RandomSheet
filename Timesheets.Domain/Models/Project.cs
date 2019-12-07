@@ -12,7 +12,7 @@ namespace Timesheets.Domain.Models
         public IList<ProjectDepartment> RelatedDeparments { get; set; }
 
         // one project is owned by one deparment
-        public long OwnerDeparmentId { get; set; }
+        public int OwnerDeparmentId { get; set; }
         public Department OwnerDeparment { get; set; }
     }
 }
